@@ -86,7 +86,7 @@ const uploadAdminFile = async (req, res) => {
       filename: originalname,
       mimetype,
       bytes: size,
-      filepath,
+      filepath: filepath,
       user: req.user._id,
       metadata: {
         uploadedBy,

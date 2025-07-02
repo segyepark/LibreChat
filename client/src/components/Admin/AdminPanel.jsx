@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthContext } from '~/hooks';
 import FileUpload from './FileUpload';
 import FileList from './FileList';

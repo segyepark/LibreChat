@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const FileList = ({ files, loading, onFileDeleted }) => {
   const [deleting, setDeleting] = useState(null);

@@ -2,8 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { requireJwtAuth } = require('~/server/middleware');
-const requireAdmin = require('~/server/middleware/requireAdmin');
+const { requireJwtAuth, requireAdmin } = require('~/server/middleware');
 const {
   getAdminFiles,
   uploadAdminFile,
@@ -27,7 +26,8 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+    const filename = uniqueSuffix + '-' + file.originalname;
+    cb(null, filename);
   },
 });
 
