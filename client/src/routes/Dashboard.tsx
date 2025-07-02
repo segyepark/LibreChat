@@ -6,7 +6,6 @@ import {
   EmptyPromptPreview,
 } from '~/components/Prompts';
 import DashboardRoute from './Layouts/Dashboard';
-import AdminDocuments from '~/components/AdminDocuments';
 
 const dashboardRoutes = {
   path: 'd/*',
@@ -72,10 +71,6 @@ const dashboardRoutes = {
           element: <PromptForm />,
         },
       ],
-    },
-    {
-      path: 'rag-files',
-      element: <AdminDocuments />,
     },
     {
       path: '*',

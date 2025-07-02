@@ -415,7 +415,6 @@ const processFileUpload = async ({ req, res, metadata }) => {
     file,
     file_id,
     openai,
-    entity_id: metadata?.entity_id,
   });
 
   if (isAssistantUpload && !metadata.message_file && !metadata.tool_resource) {

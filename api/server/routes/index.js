@@ -26,7 +26,6 @@ const edit = require('./edit');
 const keys = require('./keys');
 const user = require('./user');
 const mcp = require('./mcp');
-const ragFiles = require('./admin/ragFiles');
 
 module.exports = {
   edit,
@@ -57,5 +56,4 @@ module.exports = {
   categories,
   staticRoute,
   mcp,
-  ragFiles,
 };

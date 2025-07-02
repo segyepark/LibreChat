@@ -21,12 +21,7 @@ const primeFiles = async (options) => {
   const file_ids = tool_resources?.[EToolResources.file_search]?.file_ids ?? [];
   const agentResourceIds = new Set(file_ids);
   const resourceFiles = tool_resources?.[EToolResources.file_search]?.files ?? [];
-  let dbFiles = ((await getFiles({ file_id: { $in: file_ids } })) ?? []).concat(resourceFiles);
-
-  // If no specific files are linked to the agent/user, fall back to globally embedded (shared) files
-  if (dbFiles.length === 0) {
-    dbFiles = (await getFiles({ embedded: true }, { updatedAt: -1 })) ?? [];
-  }
+  const dbFiles = ((await getFiles({ file_id: { $in: file_ids } })) ?? []).concat(resourceFiles);
 
   let toolContext = `- Note: Semantic search is available through the ${Tools.file_search} tool but no files are currently loaded. Request the user to upload documents to search through.`;
 
