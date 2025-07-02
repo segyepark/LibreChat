@@ -16,6 +16,8 @@ import LoginLayout from './Layouts/Login';
 import dashboardRoutes from './Dashboard';
 import ShareRoute from './ShareRoute';
 import ChatRoute from './ChatRoute';
+import AdminRoute from './AdminRoute';
+import RagRoute from './RagRoute';
 import Search from './Search';
 import Root from './Root';
 
@@ -104,6 +106,14 @@ export const router = createBrowserRouter([
           {
             path: 'search',
             element: <Search />,
+          },
+          {
+            path: 'admin',
+            element: <AdminRoute />,
+          },
+          {
+            path: 'rag',
+            element: <RagRoute />,
           },
         ],
       },

@@ -22,6 +22,8 @@ const {
 } = require('./Message');
 const { getConvoTitle, getConvo, saveConvo, deleteConvos } = require('./Conversation');
 const { getPreset, getPresets, savePreset, deletePresets } = require('./Preset');
+const Admin = require('./Admin');
+const DocumentChunk = require('./DocumentChunk');
 
 module.exports = {
   ...methods,
@@ -51,4 +53,7 @@ module.exports = {
   getPresets,
   savePreset,
   deletePresets,
+
+  Admin,
+  DocumentChunk,
 };
