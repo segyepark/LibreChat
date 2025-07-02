@@ -120,6 +120,8 @@ const startServer = async () => {
   app.use('/api/memories', routes.memories);
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);
+  app.use('/api/admin-rag', require('./routes/admin-rag'));
+  app.use('/api/shared-rag', require('./routes/admin-rag').publicRouter);
 
   app.use((req, res) => {
     res.set({

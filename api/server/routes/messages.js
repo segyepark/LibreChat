@@ -11,6 +11,7 @@ const {
 } = require('~/models');
 const { findAllArtifacts, replaceArtifactContent } = require('~/server/services/Artifacts/update');
 const { requireJwtAuth, validateMessageReq } = require('~/server/middleware');
+const { applySharedRAG } = require('~/server/middleware/sharedRAG');
 const { cleanUpPrimaryKeyValue } = require('~/lib/utils/misc');
 const { getConvosQueried } = require('~/models/Conversation');
 const { countTokens } = require('~/server/utils');
@@ -172,7 +173,7 @@ router.get('/:conversationId', validateMessageReq, async (req, res) => {
   }
 });
 
-router.post('/:conversationId', validateMessageReq, async (req, res) => {
+router.post('/:conversationId', validateMessageReq, applySharedRAG, async (req, res) => {
   try {
     const message = req.body;
     const savedMessage = await saveMessage(

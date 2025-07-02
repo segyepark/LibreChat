@@ -13,6 +13,7 @@ export interface IMongoFile extends Omit<Document, 'model'> {
   embedded?: boolean;
   type: string;
   context?: string;
+  isShared?: boolean;
   usage: number;
   source: string;
   model?: string;

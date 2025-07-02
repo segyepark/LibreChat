@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SystemRoles } from 'librechat-data-provider';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { ArrowLeft, MessageSquareQuote } from 'lucide-react';
+import { ArrowLeft, MessageSquareQuote, Database } from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -57,6 +57,11 @@ export default function DashBreadcrumb() {
     [location.pathname],
   );
 
+  const isSharedRAGPath = useMemo(
+    () => location.pathname === '/d/shared-rag',
+    [location.pathname],
+  );
+
   return (
     <div className="mr-2 mt-2 flex h-10 items-center justify-between">
       <Breadcrumb className="mt-1 px-2 dark:text-gray-200">
@@ -92,16 +97,28 @@ export default function DashBreadcrumb() {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         */}
-          <BreadcrumbItem className="hover:dark:text-white">
-            <BreadcrumbLink
-              href="/d/prompts"
-              className="flex flex-row items-center gap-1"
-              onClick={promptsLinkHandler}
-            >
-              <MessageSquareQuote className="h-4 w-4 dark:text-gray-300" aria-hidden="true" />
-              {localize('com_ui_prompts')}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+          {isSharedRAGPath ? (
+            <BreadcrumbItem className="hover:dark:text-white">
+              <BreadcrumbLink
+                href="/d/shared-rag"
+                className="flex flex-row items-center gap-1"
+              >
+                <Database className="h-4 w-4 dark:text-gray-300" aria-hidden="true" />
+                Shared RAG 관리
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          ) : (
+            <BreadcrumbItem className="hover:dark:text-white">
+              <BreadcrumbLink
+                href="/d/prompts"
+                className="flex flex-row items-center gap-1"
+                onClick={promptsLinkHandler}
+              >
+                <MessageSquareQuote className="h-4 w-4 dark:text-gray-300" aria-hidden="true" />
+                {localize('com_ui_prompts')}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          )}
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex items-center justify-center gap-2">

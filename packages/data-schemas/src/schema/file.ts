@@ -53,6 +53,11 @@ const file: Schema<IMongoFile> = new Schema(
     context: {
       type: String,
     },
+    isShared: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
     usage: {
       type: Number,
       required: true,

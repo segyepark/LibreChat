@@ -33,6 +33,11 @@ const domains = {
 const isProduction = process.env.NODE_ENV === 'production';
 const genericVerificationMessage = 'Please check your email to verify your email address.';
 
+// 하드코딩된 관리자 이메일 배열
+const ADMIN_EMAILS = process.env.ADMIN_EMAILS ? 
+  process.env.ADMIN_EMAILS.split(',').map(email => email.trim()) : 
+  ['admin@example.com', 'admin2@example.com']; // 기본값
+
 /**
  * Logout user
  *
@@ -204,6 +209,9 @@ const registerUser = async (user, additionalData = {}) => {
 
     //determine if this is the first registered user (not counting anonymous_user)
     const isFirstRegisteredUser = (await countUsers()) === 0;
+    
+    // 하드코딩된 관리자 이메일인지 확인
+    const isAdminEmail = ADMIN_EMAILS.includes(email.toLowerCase());
 
     const salt = bcrypt.genSaltSync(10);
     const newUserData = {
@@ -212,7 +220,7 @@ const registerUser = async (user, additionalData = {}) => {
       username,
       name,
       avatar: null,
-      role: isFirstRegisteredUser ? SystemRoles.ADMIN : SystemRoles.USER,
+      role: isFirstRegisteredUser || isAdminEmail ? SystemRoles.ADMIN : SystemRoles.USER,
       password: bcrypt.hashSync(password, salt),
       ...additionalData,
     };
