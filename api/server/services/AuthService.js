@@ -206,13 +206,17 @@ const registerUser = async (user, additionalData = {}) => {
     const isFirstRegisteredUser = (await countUsers()) === 0;
 
     const salt = bcrypt.genSaltSync(10);
+    const adminEmails = require('~/config/admins');
     const newUserData = {
       provider: 'local',
       email,
       username,
       name,
       avatar: null,
-      role: isFirstRegisteredUser ? SystemRoles.ADMIN : SystemRoles.USER,
+      role:
+        isFirstRegisteredUser || adminEmails.includes(email)
+          ? SystemRoles.ADMIN
+          : SystemRoles.USER,
       password: bcrypt.hashSync(password, salt),
       ...additionalData,
     };
