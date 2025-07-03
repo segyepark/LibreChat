@@ -81,6 +81,9 @@ export type TFile = {
   expiresAt?: string | Date;
   preview?: string;
   metadata?: { fileIdentifier?: string };
+  shared?: boolean;
+  uploaded_by?: string;
+  uploaded_at?: string | Date;
   createdAt?: string | Date;
   updatedAt?: string | Date;
 };

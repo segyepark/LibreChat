@@ -3,6 +3,7 @@ const { logger } = require('@librechat/data-schemas');
 const { createTempChatExpirationDate } = require('@librechat/api');
 const getCustomConfig = require('~/server/services/Config/loadCustomConfig');
 const { Message } = require('~/db/models');
+const { enhanceMessageWithSharedRAG } = require('~/server/services/SharedRAG');
 
 const idSchema = z.string().uuid();
 
@@ -49,8 +50,21 @@ async function saveMessage(req, params, metadata) {
   }
 
   try {
+    // Enhance user messages with shared RAG content
+    let enhancedText = params.text;
+    if (params.isCreatedByUser && params.text) {
+      try {
+        enhancedText = await enhanceMessageWithSharedRAG(params.text);
+      } catch (error) {
+        logger.error('Error enhancing message with shared RAG:', error);
+        // Continue with original text if enhancement fails
+        enhancedText = params.text;
+      }
+    }
+
     const update = {
       ...params,
+      text: enhancedText,
       user: req.user.id,
       messageId: params.newMessageId || params.messageId,
     };

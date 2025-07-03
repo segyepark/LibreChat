@@ -70,6 +70,18 @@ const file: Schema<IMongoFile> = new Schema(
     metadata: {
       fileIdentifier: String,
     },
+    shared: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    uploaded_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    uploaded_at: {
+      type: Date,
+    },
     expiresAt: {
       type: Date,
       expires: 3600, // 1 hour in seconds

@@ -5,6 +5,7 @@ import {
   CreatePromptForm,
   EmptyPromptPreview,
 } from '~/components/Prompts';
+import { FileManager } from '~/components/Admin';
 import DashboardRoute from './Layouts/Dashboard';
 
 const dashboardRoutes = {
@@ -71,6 +72,10 @@ const dashboardRoutes = {
           element: <PromptForm />,
         },
       ],
+    },
+    {
+      path: 'files',
+      element: <FileManager />,
     },
     {
       path: '*',

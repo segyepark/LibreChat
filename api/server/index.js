@@ -112,6 +112,7 @@ const startServer = async () => {
   app.use('/api/config', routes.config);
   app.use('/api/assistants', routes.assistants);
   app.use('/api/files', await routes.files.initialize());
+  app.use('/api/admin', routes.admin);
   app.use('/images/', validateImageRequest, routes.staticRoute);
   app.use('/api/share', routes.share);
   app.use('/api/roles', routes.roles);
