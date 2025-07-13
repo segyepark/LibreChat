@@ -1,5 +1,5 @@
 import type { TFile } from 'librechat-data-provider';
-import { FileIcon, PlusIcon } from 'lucide-react';
+import { FileIcon, PlusIcon, GlobeIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DotsIcon, TrashIcon } from '~/components/svg';
@@ -30,7 +30,18 @@ export default function FileListItem2({
           <div className="w-1/4 content-center">
             <FileIcon className="m-0 size-5 p-0" />
           </div>
-          <div className="w-3/4 content-center">{file.filename}</div>
+          <div className="w-3/4 content-center">
+            {file.filename}
+            {file.isGlobal && (
+              <span
+                title="Global file"
+                className="ml-2 inline-flex items-center align-middle text-xs font-semibold text-blue-500"
+              >
+                <GlobeIcon className="mr-1 inline-block h-4 w-4" />
+                Global
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex w-fit flex-row flex-wrap text-gray-500 md:w-3/5">
           {attachedVectorStores.map((vectorStore, index) => {

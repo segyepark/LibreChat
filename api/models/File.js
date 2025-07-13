@@ -96,6 +96,23 @@ const hasAccessToFilesViaAgent = async (userId, fileIds, agentId) => {
  */
 const getFiles = async (filter, _sortOptions, selectFields = { text: 0 }, options = {}) => {
   const sortOptions = { updatedAt: -1, ..._sortOptions };
+  // If fetching for a user, always include global files
+  if (options.userId) {
+    const userFilter = { ...filter, user: options.userId };
+    const globalFilter = { ...filter, isGlobal: true };
+    // Remove user from globalFilter if present
+    delete globalFilter.user;
+    const [userFiles, globalFiles] = await Promise.all([
+      File.find(userFilter).select(selectFields).sort(sortOptions).lean(),
+      File.find(globalFilter).select(selectFields).sort(sortOptions).lean(),
+    ]);
+    // Merge and deduplicate by file_id
+    const allFiles = [
+      ...userFiles,
+      ...globalFiles.filter((gf) => !userFiles.some((uf) => uf.file_id === gf.file_id)),
+    ];
+    return allFiles;
+  }
   const files = await File.find(filter).select(selectFields).sort(sortOptions).lean();
 
   // If userId and agentId are provided, filter files based on access

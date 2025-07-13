@@ -48,7 +48,10 @@ function createContextHandlers(req, userMessageContent) {
   };
 
   const processFile = async (file) => {
-    if (file.embedded && !processedIds.has(file.file_id)) {
+    if (
+      (file.embedded && !processedIds.has(file.file_id)) ||
+      (file.isGlobal && !processedIds.has(file.file_id))
+    ) {
       try {
         const promise = query(file);
         queryPromises.push(promise);
@@ -67,29 +70,26 @@ function createContextHandlers(req, userMessageContent) {
       }
 
       const oneFile = processedFiles.length === 1;
-      const header = `The user has attached ${oneFile ? 'a' : processedFiles.length} file${
-        !oneFile ? 's' : ''
-      } to the conversation:`;
+      const header = `The user has attached ${oneFile ? 'a' : processedFiles.length} file${!oneFile ? 's' : ''
+        } to the conversation:`;
 
-      const files = `${
-        oneFile
-          ? ''
-          : `
+      const files = `${oneFile
+        ? ''
+        : `
       <files>`
-      }${processedFiles
-        .map(
-          (file) => `
+        }${processedFiles
+          .map(
+            (file) => `
               <file>
                 <filename>${file.filename}</filename>
                 <type>${file.type}</type>
               </file>`,
-        )
-        .join('')}${
-        oneFile
-          ? ''
-          : `
+          )
+          .join('')}${oneFile
+            ? ''
+            : `
         </files>`
-      }`;
+        }`;
 
       const resolvedQueries = await Promise.all(queryPromises);
 
@@ -97,35 +97,35 @@ function createContextHandlers(req, userMessageContent) {
         resolvedQueries.length === 0
           ? '\n\tThe semantic search did not return any results.'
           : resolvedQueries
-              .map((queryResult, index) => {
-                const file = processedFiles[index];
-                let contextItems = queryResult.data;
+            .map((queryResult, index) => {
+              const file = processedFiles[index];
+              let contextItems = queryResult.data;
 
-                const generateContext = (currentContext) =>
-                  `
+              const generateContext = (currentContext) =>
+                `
           <file>
             <filename>${file.filename}</filename>
             <context>${currentContext}
             </context>
           </file>`;
 
-                if (useFullContext) {
-                  return generateContext(`\n${contextItems}`);
-                }
+              if (useFullContext) {
+                return generateContext(`\n${contextItems}`);
+              }
 
-                contextItems = queryResult.data
-                  .map((item) => {
-                    const pageContent = item[0].page_content;
-                    return `
+              contextItems = queryResult.data
+                .map((item) => {
+                  const pageContent = item[0].page_content;
+                  return `
             <contextItem>
               <![CDATA[${pageContent?.trim()}]]>
             </contextItem>`;
-                  })
-                  .join('');
+                })
+                .join('');
 
-                return generateContext(contextItems);
-              })
-              .join('');
+              return generateContext(contextItems);
+            })
+            .join('');
 
       if (useFullContext) {
         const prompt = `${header}

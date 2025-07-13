@@ -17,6 +17,7 @@ const {
   removeNullishValues,
   hostImageNamePrefix,
   isAssistantsEndpoint,
+  SystemRoles,
 } = require('librechat-data-provider');
 const { EnvVar } = require('@librechat/agents');
 const {
@@ -442,6 +443,8 @@ const processFileUpload = async ({ req, res, metadata }) => {
     filepath = result.filepath;
   }
 
+  const isAdmin = req.user && req.user.role === SystemRoles.ADMIN;
+  const isGlobal = metadata.isGlobal && isAdmin;
   const result = await createFile(
     {
       user: req.user.id,
@@ -457,6 +460,7 @@ const processFileUpload = async ({ req, res, metadata }) => {
       source,
       height,
       width,
+      isGlobal: isGlobal || false,
     },
     true,
   );

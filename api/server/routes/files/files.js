@@ -10,6 +10,7 @@ const {
   EModelEndpoint,
   isAgentsEndpoint,
   checkOpenAIStorage,
+  SystemRoles,
 } = require('librechat-data-provider');
 const {
   filterFile,
@@ -379,11 +380,22 @@ router.post('/', async (req, res) => {
   const metadata = req.body;
   let cleanup = true;
 
+  // Accept isGlobal from form-data or JSON
+  let isGlobal = false;
+  if (req.body.isGlobal === 'true' || req.body.isGlobal === true) {
+    if (req.user && req.user.role === SystemRoles.ADMIN) {
+      isGlobal = true;
+    } else {
+      return res.status(403).json({ message: 'Only admins can upload global files.' });
+    }
+  }
+
   try {
     filterFile({ req });
 
     metadata.temp_file_id = metadata.file_id;
     metadata.file_id = req.file_id;
+    metadata.isGlobal = isGlobal;
 
     if (isAgentsEndpoint(metadata.endpoint)) {
       return await processAgentFileUpload({ req, res, metadata });
