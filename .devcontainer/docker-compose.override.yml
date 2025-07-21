@@ -32,7 +32,7 @@ services:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
       - EMBEDDINGS_PROVIDER=huggingface
-      - HF_TOKEN=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
+      - HF_TOKEN=your_huggingface_token_here
 
 volumes:
   pgdata2:
