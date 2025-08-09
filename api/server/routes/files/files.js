@@ -295,7 +295,7 @@ router.delete('/global/:file_id', async (req, res) => {
     }
 
     const { file_id } = req.params;
-    
+
     if (!isValidID(file_id)) {
       return res.status(400).json({ message: 'Invalid file ID' });
     }
@@ -439,11 +439,11 @@ router.get('/test', (req, res) => {
 
 router.post('/', async (req, res) => {
   console.log('[/files] POST /files route hit!');
-  
+
   try {
     // Create multer instance and apply it to this request
     const upload = await createMulterInstance();
-    
+
     // Apply multer middleware to this request
     upload.single('file')(req, res, async (err) => {
       if (err) {
@@ -479,7 +479,7 @@ router.post('/', async (req, res) => {
           req.file_id = uuidv4();
           logger.debug('[/files] Generated file_id:', req.file_id);
         }
-        
+
         // Set file_id in body for filterFile to find
         req.body.file_id = req.file_id;
 
@@ -519,28 +519,23 @@ router.post('/', async (req, res) => {
 
         // TODO: delete remote file if it exists
         try {
-          if (req.file?.path) {
-            await fs.unlink(req.file.path);
-            cleanup = false;
-          }
+          await fs.unlink(req.file.path);
+          cleanup = false;
         } catch (error) {
           logger.error('[/files] Error deleting file:', error);
         }
         res.status(500).json({ message });
-      }
-
-      if (cleanup && req.file?.path) {
-        try {
-          await fs.unlink(req.file.path);
-        } catch (error) {
-          logger.error('[/files] Error deleting file after file processing:', error);
+      } finally {
+        if (cleanup) {
+          try {
+            await fs.unlink(req.file.path);
+          } catch (error) {
+            logger.error('[/files] Error deleting file after file processing:', error);
+          }
+        } else {
+          logger.debug('[/files] File processing completed without cleanup');
         }
       }
     });
-  } catch (error) {
-    logger.error('[/files] Error setting up multer:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
 
-module.exports = router;
+    module.exports = router;
