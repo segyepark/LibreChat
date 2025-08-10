@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Shield } from 'lucide-react';
-import { Button } from '~/components/ui/Button';
+import { Button } from '@librechat/client';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { SystemRoles } from 'librechat-data-provider';
 import GlobalFilesModal from './GlobalFilesModal';

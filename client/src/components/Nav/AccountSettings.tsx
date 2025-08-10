@@ -118,7 +118,7 @@ function AccountSettings() {
             onClick={() => setShowGlobalFiles(true)}
             className="select-item text-sm"
           >
-            <Shield className="icon-md" aria-hidden="true" />
+            <GearIcon className="icon-md" aria-hidden="true" />
             Global Files
           </Select.SelectItem>
         )}

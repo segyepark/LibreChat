@@ -11,6 +11,7 @@ import BookmarkMenu from './Menus/BookmarkMenu';
 import { TemporaryChat } from './TemporaryChat';
 import AddMultiConvo from './AddMultiConvo';
 import { useHasAccess } from '~/hooks';
+import AdminButton from '~/components/Admin/AdminButton';
 
 const defaultInterface = getConfigDefaults().interface;
 

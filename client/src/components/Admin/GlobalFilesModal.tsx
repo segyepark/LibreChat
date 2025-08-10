@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/Dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@librechat/client';
 import GlobalFileManager from '~/components/Files/GlobalFileManager';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { SystemRoles } from 'librechat-data-provider';

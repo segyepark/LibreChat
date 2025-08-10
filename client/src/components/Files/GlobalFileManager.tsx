@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Upload, Trash2 } from 'lucide-react';
-import { Button } from '~/components/ui/Button';
-import { Input } from '~/components/ui/Input';
-import { Label } from '~/components/ui/Label';
-import { Checkbox } from '~/components/ui/Checkbox';
+import { Button, Input, Label, Checkbox } from '@librechat/client';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { SystemRoles } from 'librechat-data-provider';
 

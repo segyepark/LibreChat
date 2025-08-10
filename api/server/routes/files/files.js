@@ -537,5 +537,10 @@ router.post('/', async (req, res) => {
         }
       }
     });
+  } catch (error) {
+    logger.error('[/files] Error in file upload route:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
-    module.exports = router;
+module.exports = router;
