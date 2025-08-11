@@ -15,6 +15,7 @@ import { useConversationsInfiniteQuery } from '~/data-provider';
 import { Conversations } from '~/components/Conversations';
 import SearchBar from './SearchBar';
 import NewChat from './NewChat';
+import WorkOnMenu from './WorkOnMenu';
 import { cn } from '~/utils';
 import store from '~/store';
 
@@ -186,12 +187,13 @@ const Nav = memo(
         <div
           data-testid="nav"
           className={cn(
-            'nav active max-w-[320px] flex-shrink-0 transform overflow-x-hidden bg-surface-primary-alt transition-all duration-200 ease-in-out',
+            'nav active max-w-[320px] flex-shrink-0 transform overflow-x-hidden transition-all duration-200 ease-in-out',
             'md:max-w-[260px]',
           )}
           style={{
             width: navVisible ? navWidth : '0px',
             transform: navVisible ? 'translateX(0)' : 'translateX(-100%)',
+            backgroundColor: '#EEF2FF',
           }}
         >
           <div className="h-full w-[320px] md:w-[260px]">
@@ -205,6 +207,11 @@ const Nav = memo(
                     aria-label={localize('com_ui_chat_history')}
                     className="flex h-full flex-col px-2 pb-3.5 md:px-3"
                   >
+                    {/* WorkOn 메뉴 추가 */}
+                    <div className="flex justify-center mb-6">
+                      <WorkOnMenu />
+                    </div>
+                    
                     <div className="flex flex-1 flex-col" ref={outerContainerRef}>
                       <MemoNewChat
                         subHeaders={subHeaders}
