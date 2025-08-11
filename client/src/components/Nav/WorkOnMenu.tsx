@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalize } from '~/hooks';
-const workonLogo = '/assets/figma-icons/workon-logo.svg';
-const commentAddIcon = '/assets/figma-icons/comment-add-icon.svg';
-const searchIcon = '/assets/figma-icons/search-icon.svg';
-const userCardIcon = '/assets/figma-icons/user-card-icon.svg';
-const chatConversationIcon = '/assets/figma-icons/chat-conversation-icon.svg';
-const giftIcon = '/assets/figma-icons/gift-icon.svg';
+const workonLogo = '/assets/workon-logo.svg';
+const commentAddIcon = '/assets/comment-add-icon.svg';
+const searchIcon = '/assets/search-icon.svg';
+const userCardIcon = '/assets/user-card-icon.svg';
+const chatConversationIcon = '/assets/chat-conversation-icon.svg';
+const giftIcon = '/assets/gift-icon.svg';
 
 interface MenuItemProps {
   icon: string;

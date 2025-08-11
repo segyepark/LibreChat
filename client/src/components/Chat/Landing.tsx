@@ -153,7 +153,7 @@ export default function Landing({ centerFormOnLanding }: { centerFormOnLanding: 
         >
           <div className={`relative size-20 justify-center ${textHasMultipleLines ? 'mb-2' : ''}`}>
             <img 
-              src="/assets/figma-icons/workon-logo.svg" 
+              src="/assets/workon-logo.svg" 
               alt="WorkOn" 
               className="w-full h-full"
             />
