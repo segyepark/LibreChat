@@ -27,11 +27,13 @@ export default function useTextarea({
   submitButtonRef,
   setIsScrollable,
   disabled = false,
+  skipPlaceholder = false,
 }: {
   textAreaRef: React.RefObject<HTMLTextAreaElement>;
   submitButtonRef: React.RefObject<HTMLButtonElement>;
   setIsScrollable: React.Dispatch<React.SetStateAction<boolean>>;
   disabled?: boolean;
+  skipPlaceholder?: boolean;
 }) {
   const localize = useLocalize();
   const getSender = useGetSender();
@@ -71,6 +73,11 @@ export default function useTextarea({
   }, [activePrompt, setActivePrompt, textAreaRef]);
 
   useEffect(() => {
+    // skipPlaceholder가 true이면 placeholder 설정을 건너뛰기
+    if (skipPlaceholder) {
+      return;
+    }
+
     const currentValue = textAreaRef.current?.value ?? '';
     if (currentValue) {
       return;
@@ -89,7 +96,7 @@ export default function useTextarea({
         isAssistant &&
         (!currentAssistantId || !assistantMap?.[currentEndpoint]?.[currentAssistantId])
       ) {
-        return localize('com_endpoint_assistant_placeholder');
+        return localize('com_endpoint_message_not_appendable');
       }
 
       if (isNotAppendable) {
@@ -138,6 +145,7 @@ export default function useTextarea({
     conversation,
     latestMessage,
     isNotAppendable,
+    skipPlaceholder,
   ]);
 
   const handleKeyDown = useCallback(

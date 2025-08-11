@@ -148,6 +148,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     submitButtonRef,
     setIsScrollable,
     disabled: disableInputs,
+    skipPlaceholder: true, // placeholder 설정을 건너뛰기
   });
 
   useQueryParams({ textAreaRef });
@@ -236,16 +237,16 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
             />
           )}
           <PromptsCommand index={index} textAreaRef={textAreaRef} submitPrompt={submitPrompt} />
-          <div
-            onClick={handleContainerClick}
-            className={cn(
-              'relative flex w-full flex-grow flex-col overflow-hidden rounded-t-3xl border pb-4 text-text-primary transition-all duration-200 sm:rounded-3xl sm:pb-0',
-              isTextAreaFocused ? 'shadow-lg' : 'shadow-md',
-              isTemporary
-                ? 'border-violet-800/60 bg-violet-950/10'
-                : 'border-border-light bg-surface-chat',
-            )}
-          >
+                      <div
+              onClick={handleContainerClick}
+              className={cn(
+                'relative flex w-full flex-grow flex-col overflow-hidden rounded-t-3xl border pb-4 text-text-primary transition-all duration-200 sm:rounded-3xl sm:pb-0',
+                isTextAreaFocused ? 'shadow-lg' : 'shadow-md',
+                isTemporary
+                  ? 'border-violet-800/60 bg-violet-950/10'
+                  : 'border-[#00A0FF] bg-surface-chat',
+              )}
+            >
             <TextareaHeader addedConvo={addedConvo} setAddedConvo={setAddedConvo} />
             <EditBadges
               isEditingChatBadges={isEditingBadges}
@@ -272,6 +273,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
                   tabIndex={0}
                   data-testid="text-input"
                   rows={1}
+                  placeholder="메시지 입력"
                   onFocus={() => {
                     handleFocusOrClick();
                     setIsTextAreaFocused(true);
