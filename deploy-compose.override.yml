@@ -19,3 +19,5 @@ services:
     environment:
       - EMBEDDINGS_PROVIDER=huggingface
       - HF_TOKEN=${HF_TOKEN}
+    mem_limit: 3g
+    cpus: 1.0
