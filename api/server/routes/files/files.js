@@ -440,6 +440,9 @@ router.get('/test', (req, res) => {
 router.post('/', async (req, res) => {
   console.log('[/files] POST /files route hit!');
 
+  // Set timeout for large file uploads (30 minutes)
+  req.setTimeout(30 * 60 * 1000);
+
   try {
     // Create multer instance and apply it to this request
     const upload = await createMulterInstance();
@@ -448,6 +451,25 @@ router.post('/', async (req, res) => {
     upload.single('file')(req, res, async (err) => {
       if (err) {
         logger.error('[/files] Multer error:', err);
+        
+        // Handle specific multer errors
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({ 
+            message: 'File too large. Please check the file size limit.',
+            error: 'FILE_TOO_LARGE'
+          });
+        } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).json({ 
+            message: 'Unexpected file field.',
+            error: 'UNEXPECTED_FILE_FIELD'
+          });
+        } else if (err.message && err.message.includes('File too large')) {
+          return res.status(413).json({ 
+            message: 'File too large. Please check the file size limit.',
+            error: 'FILE_TOO_LARGE'
+          });
+        }
+        
         return res.status(400).json({ message: 'File upload error: ' + err.message });
       }
 
@@ -504,27 +526,48 @@ router.post('/', async (req, res) => {
         await processFileUpload({ req, res, metadata });
       } catch (error) {
         let message = 'Error processing file';
+        let statusCode = 500;
+        
         logger.error('[/files] Error processing file:', error);
 
+        // Handle specific error types
         if (error.message?.includes('file_ids')) {
           message += ': ' + error.message;
-        }
-
-        if (
-          error.message?.includes('Invalid file format') ||
-          error.message?.includes('No OCR result')
-        ) {
+        } else if (error.message?.includes('File size limit')) {
+          statusCode = 413;
           message = error.message;
+        } else if (error.message?.includes('Invalid file format')) {
+          statusCode = 400;
+          message = error.message;
+        } else if (error.message?.includes('No OCR result')) {
+          statusCode = 400;
+          message = error.message;
+        } else if (error.message?.includes('Unsupported file type')) {
+          statusCode = 400;
+          message = error.message;
+        } else if (error.code === 'ENOSPC') {
+          statusCode = 507; // Insufficient Storage
+          message = 'Server storage is full. Please try again later.';
+        } else if (error.code === 'ETIMEDOUT') {
+          statusCode = 408; // Request Timeout
+          message = 'File upload timed out. Please try again with a smaller file or check your connection.';
         }
 
         // TODO: delete remote file if it exists
         try {
-          await fs.unlink(req.file.path);
-          cleanup = false;
-        } catch (error) {
-          logger.error('[/files] Error deleting file:', error);
+          if (req.file && req.file.path) {
+            await fs.unlink(req.file.path);
+            cleanup = false;
+          }
+        } catch (unlinkError) {
+          logger.error('[/files] Error deleting file:', unlinkError);
         }
-        res.status(500).json({ message });
+        
+        res.status(statusCode).json({ 
+          message,
+          error: error.message,
+          code: error.code || 'UNKNOWN_ERROR'
+        });
       } finally {
         if (cleanup) {
           try {

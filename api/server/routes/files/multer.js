@@ -76,7 +76,10 @@ const createMulterInstance = async () => {
   return multer({
     storage,
     fileFilter,
-    limits: { fileSize: fileConfig.serverFileSizeLimit },
+    limits: { 
+      fileSize: fileConfig.serverFileSizeLimit,
+      fieldSize: 50 * 1024 * 1024, // 50MB field size limit
+    },
   });
 };
 

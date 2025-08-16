@@ -17,6 +17,7 @@ const GlobalFileManager: React.FC = () => {
   const { user, token } = useAuthContext();
   const [globalFiles, setGlobalFiles] = useState<GlobalFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isGlobal, setIsGlobal] = useState(true);
   
@@ -61,6 +62,7 @@ const GlobalFileManager: React.FC = () => {
     });
 
     setIsUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('isGlobal', 'true');
@@ -72,7 +74,27 @@ const GlobalFileManager: React.FC = () => {
       hasEndpoint: formData.has('endpoint'),
     });
 
+    let progressInterval: NodeJS.Timeout | undefined;
+
     try {
+      // Create AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30 * 60 * 1000); // 30 minutes timeout
+
+      // Simulate upload progress for large files
+      progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev < 85) {
+            return prev + Math.random() * 3;  // 초기에는 빠르게
+          } else if (prev < 98) {
+            return prev + Math.random() * 0.5;  // 85-98%: 매우 천천히
+          } else if (prev < 99.5) {
+            return prev + Math.random() * 0.1;  // 98-99.5%: 거의 정지
+          }
+          return prev;  // 99.5%에서 대기
+        });
+      }, 600);  // 더 빠른 업데이트
+
       const response = await fetch('/api/files', {
         method: 'POST',
         headers: {
@@ -80,7 +102,11 @@ const GlobalFileManager: React.FC = () => {
           // Don't set Content-Type - let browser set it automatically for FormData
         },
         body: formData,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+      clearInterval(progressInterval);
 
       console.log('[/frontend] Response received:', {
         status: response.status,
@@ -91,17 +117,52 @@ const GlobalFileManager: React.FC = () => {
       if (response.ok) {
         setSelectedFile(null);
         setIsGlobal(true);
+        
+        // 점진적으로 100%로 완료
+        setUploadProgress(95);
+        setTimeout(() => setUploadProgress(100), 200);
+        
         fetchGlobalFiles();
+        // Show success message
+        alert('File uploaded successfully!');
       } else {
         const error = await response.json();
         console.error('[/frontend] Upload failed:', error);
-        alert(`Upload failed: ${error.message}`);
+        
+        // Handle specific error types
+        let errorMessage = error.message;
+        if (error.code === 'FILE_TOO_LARGE') {
+          errorMessage = 'File is too large. Please check the file size limit.';
+        } else if (error.code === 'UNEXPECTED_FILE_FIELD') {
+          errorMessage = 'Invalid file format. Please try again.';
+        } else if (error.code === 'ENOSPC') {
+          errorMessage = 'Server storage is full. Please try again later.';
+        } else if (error.code === 'ETIMEDOUT') {
+          errorMessage = 'Upload timed out. Please try again with a smaller file or check your connection.';
+        }
+        
+        alert(`Upload failed: ${errorMessage}`);
       }
     } catch (error) {
       console.error('[/frontend] Error uploading file:', error);
-      alert('An error occurred during upload.');
+      
+      let errorMessage = 'An error occurred during upload.';
+      if (error.name === 'AbortError') {
+        errorMessage = 'Upload timed out. Please try again with a smaller file or check your connection.';
+        alert(errorMessage);
+      } else if (error.message) {
+        errorMessage = error.message;
+        alert(errorMessage);
+      } else {
+        alert(errorMessage);
+      }
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
+      // Clear any remaining intervals
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
     }
   };
 
@@ -177,6 +238,22 @@ const GlobalFileManager: React.FC = () => {
             <Upload className="h-4 w-4" />
             {isUploading ? 'Uploading...' : 'Upload File'}
           </Button>
+          
+          {/* Upload Progress Bar */}
+          {isUploading && (
+            <div className="w-full">
+              <div className="mb-2 flex justify-between text-sm text-gray-600">
+                <span>Upload Progress</span>
+                <span>{Math.floor(uploadProgress)}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
+                  className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -35,6 +35,17 @@ const { getStrategyFunctions } = require('./strategies');
 const { determineFileType } = require('~/server/utils');
 const { logger } = require('~/config');
 
+// Memory monitoring utility
+const logMemoryUsage = (operation) => {
+  const memUsage = process.memoryUsage();
+  logger.debug(`[Memory] ${operation}:`, {
+    rss: `${Math.round(memUsage.rss / 1024 / 1024)}MB`,
+    heapUsed: `${Math.round(memUsage.heapUsed / 1024 / 1024)}MB`,
+    heapTotal: `${Math.round(memUsage.heapTotal / 1024 / 1024)}MB`,
+    external: `${Math.round(memUsage.external / 1024 / 1024)}MB`,
+  });
+};
+
 /**
  *
  * @param {Array<MongoFile>} files
@@ -388,6 +399,9 @@ const uploadImageBuffer = async ({ req, context, metadata = {}, resize = true })
  * @returns {Promise<void>}
  */
 const processFileUpload = async ({ req, res, metadata }) => {
+  // Log memory usage at start
+  logMemoryUsage('processFileUpload-start');
+  
   const isAssistantUpload = isAssistantsEndpoint(metadata.endpoint);
   const assistantSource =
     metadata.endpoint === EModelEndpoint.azureAssistants ? FileSources.azure : FileSources.openai;
@@ -461,6 +475,16 @@ const processFileUpload = async ({ req, res, metadata }) => {
     },
     true,
   );
+  
+  // Log memory usage at end
+  logMemoryUsage('processFileUpload-end');
+  
+  // Force garbage collection for large files to prevent memory leaks
+  if (global.gc && bytes > 10 * 1024 * 1024) { // If file is larger than 10MB
+    global.gc();
+    logMemoryUsage('processFileUpload-after-gc');
+  }
+  
   res.status(200).json({ message: 'File uploaded and processed successfully', ...result });
 };
 
@@ -476,6 +500,9 @@ const processFileUpload = async ({ req, res, metadata }) => {
  * @returns {Promise<void>}
  */
 const processAgentFileUpload = async ({ req, res, metadata }) => {
+  // Log memory usage at start
+  logMemoryUsage('processAgentFileUpload-start');
+  
   const { file } = req;
   const { agent_id, tool_resource } = metadata;
   if (agent_id && !tool_resource) {
@@ -631,6 +658,16 @@ const processAgentFileUpload = async ({ req, res, metadata }) => {
   });
 
   const result = await createFile(fileInfo, true);
+  
+  // Log memory usage at end
+  logMemoryUsage('processAgentFileUpload-end');
+  
+  // Force garbage collection for large files to prevent memory leaks
+  if (global.gc && file.size > 10 * 1024 * 1024) { // If file is larger than 10MB
+    global.gc();
+    logMemoryUsage('processAgentFileUpload-after-gc');
+  }
+  
   res.status(200).json({ message: 'Agent file uploaded and processed successfully', ...result });
 };
 

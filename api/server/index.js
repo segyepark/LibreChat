@@ -53,8 +53,8 @@ const startServer = async () => {
 
   /* Middleware */
   app.use(noIndex);
-  app.use(express.json({ limit: '3mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '3mb' }));
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
   app.use(mongoSanitize());
   app.use(cors());
   app.use(cookieParser());
