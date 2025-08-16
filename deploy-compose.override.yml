@@ -3,9 +3,9 @@
 
 services:
   api:
-    image: iworldpark/librechat-custom:latest # Docker Hub 이미지 사용
-    env_file:
-      - .env.live
+    build:
+      context: .
+    image: librechat-custom
     environment:
       - GOOGLE_KEY=${GOOGLE_KEY}
       - GOOGLE_MODELS=${GOOGLE_MODELS}
@@ -14,14 +14,8 @@ services:
     ports:
       - 27018:27017 
 
-  meilisearch:
-    env_file:
-      - .env.live
-
   rag_api:
     image: ghcr.io/danny-avila/librechat-rag-api-dev:latest
-    env_file:
-      - .env.live
     environment:
       - EMBEDDINGS_PROVIDER=huggingface
       - HF_TOKEN=${HF_TOKEN}
